@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    /* Base Options: */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": true,
+    /* Decorators */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    /* If transpiling with TypeScript: */
+    "module": "CommonJS",
+    "outDir": "build",
+    "sourceMap": true,
+    // "baseUrl": "/src",
+    /* AND if you're building for a library in a monorepo: */
+    "composite": true,
+    "declarationMap": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    },
+    /* If your code doesn't run in the DOM: */
+    "lib": [
+      "es2022"
+    ]
+  },
+  "include": ["**/*.ts", "**/*.d.ts", "**/*.spec.ts", "**/*.js", "**/*.json", ".eslintrc.js"],
+  "exclude": [
+    "build",
+    "node_modules",
+    ".vscode",
+    "tsconfig.json"
+  ],
+  "ts-node": {
+    // https://www.npmjs.com/package/ts-node
+    "pretty": true,
+    "files": true // load src/types. Load files, include and exclude from tsconfig.json on startup (TS_NODE_FILES, default: false)
+  }
+}

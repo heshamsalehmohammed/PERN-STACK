@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="D:\ProgramFiles\apps\PEN2-stack\backend\test\utils\general.methods.spec.ts">
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should remove double slashes in the path" duration="9"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should remove triple or more slashes in the path" duration="1"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should add http:// prefix if no protocol is provided" duration="1"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should preserve https:// protocol" duration="2"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should handle URL with query parameters" duration="1"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should handle URL with hash fragment" duration="2"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should handle URL with port number" duration="1"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should handle root path with double slashes" duration="1"/>
+    <testCase name="GeneralMethods normalizeUrlExtraSlashes should handle URL without extra slashes" duration="1"/>
+  </file>
+</testExecutions>
