@@ -19,6 +19,7 @@ export default function LogoutButton() {
 
     // Cookie cleared on backend → new request → RootLayout sees no user
     router.push("/auth/login");
+    router.refresh();
   };
 
   return (
@@ -26,7 +27,7 @@ export default function LogoutButton() {
       variant="outline"
       size="sm"
       onClick={handleLogout}
-      className="text-sm font-medium"
+      className="text-sm font-medium cursor-pointer"
     >
       Logout
     </Button>
