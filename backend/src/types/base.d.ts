@@ -13,12 +13,8 @@ interface IObjectValue<T = unknown> {
 
 type P<T> = Pick<T, K extends IObjectValue ? T[K] : never>;
 
-interface IPayload {
-  userId: string;
-  isAdmin: number;
-}
 
-interface ISignedPayload extends IPayload {
+interface ISignedPayload {
   iat: number;
   exp: number;
 }
