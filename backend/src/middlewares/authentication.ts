@@ -15,7 +15,11 @@ class AuthenticationMiddleware {
     res: Response,
     next: NextFunction,
   ): Promise<void | Response> => {
-    const openUrls: string[] = ["/health", "/auth/login", "/auth/register"];
+    const openUrls: string[] = [
+      "/health",
+      "/auth/login",
+      "/auth/register",
+    ];
 
     // clean url remove query params
     const url = req.path.split('?')[0];

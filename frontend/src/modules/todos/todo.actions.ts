@@ -1,7 +1,5 @@
 'use server';
 
-'use server';
-
 import axiosRequest from '@/helpers/axios';
 import envSettings from '@/config/envSettings';
 import { revalidatePath } from 'next/cache';

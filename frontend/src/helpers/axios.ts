@@ -7,12 +7,17 @@ import axios, {
 import { getErrorMessage } from "./error-handling";
 
 function normalizeUrlExtraSlashes(input: string): string {
-  // Remove double or more slashes in the path
-  const url = input.replace(/\/{2,}/g, "/");
+  const [protocolAndHost, ...restParts] = input.split("://");
+  if (restParts.length === 0) {
+    // no protocol – probably relative URL
+    return input.replace(/\/{2,}/g, "/");
+  }
 
-  return url;
+  const rest = restParts.join("://"); // just in case there are '://' in path
+  const normalizedRest = rest.replace(/\/{2,}/g, "/");
+
+  return `${protocolAndHost}://${normalizedRest}`;
 }
-
 // Generalized request function with headers
 export default async function axiosRequest<B = undefined, T = undefined>(
   method: Method,
