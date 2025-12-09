@@ -15,7 +15,7 @@ class AuthenticationMiddleware {
     res: Response,
     next: NextFunction,
   ): Promise<void | Response> => {
-    const openUrls: string[] = ['/health'];
+    const openUrls: string[] = ["/health", "/auth/login", "/auth/register"];
 
     // clean url remove query params
     const url = req.path.split('?')[0];
@@ -29,11 +29,16 @@ class AuthenticationMiddleware {
 
     if (!token) {
       token = req.headers['access-token'] as string;
-    }
+    } 
 
     if (!token) {
       token = req.headers['access-key'] as string;
-      res.locals.jwtPayload = { isAdmin: '1' };
+      res.locals.jwtPayload = {
+        id: "0",
+        email: "internal@service",
+        role: "master",
+        permissions: [],
+      };
     }
 
     if (!token) {
