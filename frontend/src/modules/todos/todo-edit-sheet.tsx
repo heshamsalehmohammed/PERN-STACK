@@ -21,7 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { updateTodo } from "./todo.actions";
 import { TODO_STATUSES, PRIORITY_OPTIONS } from "./todo.const";
 import { toast } from "sonner";
@@ -29,6 +34,7 @@ import { Loader2, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import FormSkeleton from "@/features/skeletons/form-skeleton";
+import { handleAction } from "@/lib/ui/handle-action";
 
 const formSchema = z.object({
   title: z
@@ -50,7 +56,11 @@ interface TodoEditFormProps {
   onPendingChange: (pending: boolean) => void;
 }
 
-function TodoEditForm({ todoPromise, onSuccess, onPendingChange }: TodoEditFormProps) {
+function TodoEditForm({
+  todoPromise,
+  onSuccess,
+  onPendingChange,
+}: TodoEditFormProps) {
   const result = use(todoPromise);
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -83,16 +93,14 @@ function TodoEditForm({ todoPromise, onSuccess, onPendingChange }: TodoEditFormP
 
       onPendingChange(true);
       startTransition(async () => {
-        const updateResult = await updateTodo(todo.todo_id, todoData);
-
+        await handleAction(() => updateTodo(todo.todo_id, todoData), {
+          successMessage: "Todo updated successfully",
+          onSuccess: () => {
+            onSuccess();
+            router.refresh();
+          },
+        });
         onPendingChange(false);
-        if (updateResult.success) {
-          toast.success("Todo updated successfully");
-          onSuccess();
-          router.refresh();
-        } else {
-          toast.error(updateResult.message || "Failed to update todo");
-        }
       });
     },
   });
@@ -117,97 +125,27 @@ function TodoEditForm({ todoPromise, onSuccess, onPendingChange }: TodoEditFormP
         className="flex-1 overflow-y-auto px-4 py-2"
       >
         <fieldset disabled={pending} className="disabled:opacity-50">
-        <FieldGroup className="gap-5">
-          <form.Field
-            name="title"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    Title <span className="text-destructive">*</span>
-                  </FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="What needs to be done?"
-                    autoComplete="off"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          />
-
-          <form.Field
-            name="description"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    Description{" "}
-                    <span className="text-muted-foreground font-normal">
-                      (optional)
-                    </span>
-                  </FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    placeholder="Add some details..."
-                    autoComplete="off"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
+          <FieldGroup className="gap-5">
             <form.Field
-              name="status"
+              name="title"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Status</FieldLabel>
-                    <Select
+                    <FieldLabel htmlFor={field.name}>
+                      Title <span className="text-destructive">*</span>
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
                       value={field.state.value}
-                      onValueChange={(value: TTodoStatus) =>
-                        field.handleChange(value)
-                      }
-                      disabled={pending}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TODO_STATUSES.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={cn(
-                                  "size-2 rounded-full",
-                                  status.color
-                                )}
-                              />
-                              {status.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="What needs to be done?"
+                      autoComplete="off"
+                    />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}
@@ -217,36 +155,28 @@ function TodoEditForm({ todoPromise, onSuccess, onPendingChange }: TodoEditFormP
             />
 
             <form.Field
-              name="priority"
+              name="description"
               children={(field) => {
                 const isInvalid =
                   field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Priority</FieldLabel>
-                    <Select
-                      value={String(field.state.value)}
-                      onValueChange={(value) =>
-                        field.handleChange(parseInt(value))
-                      }
-                      disabled={pending}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PRIORITY_OPTIONS.map((priority) => (
-                          <SelectItem
-                            key={priority.value}
-                            value={String(priority.value)}
-                          >
-                            <span className={cn("font-medium", priority.color)}>
-                              {priority.label}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FieldLabel htmlFor={field.name}>
+                      Description{" "}
+                      <span className="text-muted-foreground font-normal">
+                        (optional)
+                      </span>
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      placeholder="Add some details..."
+                      autoComplete="off"
+                    />
                     {isInvalid && (
                       <FieldError errors={field.state.meta.errors} />
                     )}
@@ -254,37 +184,123 @@ function TodoEditForm({ todoPromise, onSuccess, onPendingChange }: TodoEditFormP
                 );
               }}
             />
-          </div>
 
-          <form.Field
-            name="due_date"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>
-                    Due Date{" "}
-                    <span className="text-muted-foreground font-normal">
-                      (optional)
-                    </span>
-                  </FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="date"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    className="w-full"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          />
-        </FieldGroup>
+            <div className="grid grid-cols-2 gap-4">
+              <form.Field
+                name="status"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Status</FieldLabel>
+                      <Select
+                        value={field.state.value}
+                        onValueChange={(value: TTodoStatus) =>
+                          field.handleChange(value)
+                        }
+                        disabled={pending}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TODO_STATUSES.map((status) => (
+                            <SelectItem key={status.value} value={status.value}>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={cn(
+                                    "size-2 rounded-full",
+                                    status.color
+                                  )}
+                                />
+                                {status.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+
+              <form.Field
+                name="priority"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Priority</FieldLabel>
+                      <Select
+                        value={String(field.state.value)}
+                        onValueChange={(value) =>
+                          field.handleChange(parseInt(value))
+                        }
+                        disabled={pending}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {PRIORITY_OPTIONS.map((priority) => (
+                            <SelectItem
+                              key={priority.value}
+                              value={String(priority.value)}
+                            >
+                              <span
+                                className={cn("font-medium", priority.color)}
+                              >
+                                {priority.label}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+            </div>
+
+            <form.Field
+              name="due_date"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Due Date{" "}
+                      <span className="text-muted-foreground font-normal">
+                        (optional)
+                      </span>
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type="date"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      className="w-full"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
+          </FieldGroup>
         </fieldset>
       </form>
       <SheetFooter className="px-4 pt-4 border-t gap-3">
@@ -311,8 +327,6 @@ function TodoEditForm({ todoPromise, onSuccess, onPendingChange }: TodoEditFormP
   );
 }
 
-
-
 interface TodoEditSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -327,7 +341,10 @@ export function TodoEditSheet({
   const [isPending, setIsPending] = useState(false);
 
   return (
-    <Sheet open={open} onOpenChange={(value) => !isPending && onOpenChange(value)}>
+    <Sheet
+      open={open}
+      onOpenChange={(value) => !isPending && onOpenChange(value)}
+    >
       <SheetContent className="sm:max-w-md">
         <SheetHeader className="text-left">
           <SheetTitle className="text-xl">Edit Todo</SheetTitle>

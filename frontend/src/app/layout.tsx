@@ -28,6 +28,8 @@ export default async function RootLayout({
 }>) {
   const serverUser = await getServerAuthUser();
 
+  
+
   return (
     <html lang="en">
       <body

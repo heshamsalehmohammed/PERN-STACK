@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { EllipsisIcon, PencilIcon, TrashIcon } from 'lucide-react';
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { EllipsisIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,11 +10,11 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Row } from '@tanstack/react-table';
-import { Button } from '@/components/ui/button';
-import { deleteTodo, getTodoById } from './todo.actions';
-import { toast } from 'sonner';
+} from "@/components/ui/dropdown-menu";
+import { Row } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { deleteTodo, getTodoById } from "./todo.actions";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,9 +24,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { TodoEditSheet } from './todo-edit-sheet';
-import FullScreenLoader from '@/features/dialogs/loading-dialog';
+} from "@/components/ui/alert-dialog";
+import { TodoEditSheet } from "./todo-edit-sheet";
+import FullScreenLoader from "@/features/dialogs/loading-dialog";
+import { handleAction } from "@/lib/ui/handle-action";
 
 interface TodoRowActionsProps {
   row: Row<ITodo>;
@@ -38,17 +39,18 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditSheet, setShowEditSheet] = useState(false);
-  const [todoPromise, setTodoPromise] = useState<Promise<IDataResponse<ITodo>> | null>(null);
+  const [todoPromise, setTodoPromise] = useState<Promise<
+    IDataResponse<ITodo>
+  > | null>(null);
 
   function onDelete() {
     startTransition(async () => {
-      const result = await deleteTodo(rowData.todo_id);
-      if (result.success) {
-        toast.success(result.message);
-        router.refresh();
-      } else {
-        toast.error(result.message || 'Failed to delete todo');
-      }
+      await handleAction(() => deleteTodo(rowData.todo_id), {
+        successMessage: "Todo deleted successfully",
+        onSuccess: () => {
+          router.refresh();
+        },
+      });
     });
   }
 
@@ -61,7 +63,7 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
   return (
     <>
       <FullScreenLoader isLoading={isPending} headerText="Deleting todo..." />
-      
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -100,7 +102,8 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              You&apos;re about to delete &quot;{rowData.title}&quot;. This action cannot be undone.
+              You&apos;re about to delete &quot;{rowData.title}&quot;. This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -110,7 +113,7 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
               disabled={isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isPending ? 'Deleting...' : 'Delete'}
+              {isPending ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

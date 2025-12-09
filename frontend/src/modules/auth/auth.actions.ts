@@ -1,8 +1,6 @@
-// src/modules/auth/auth.actions.ts
-import axiosRequest from "@/helpers/axios";
-import envSettings from "@/config/envSettings";
+import { clientApiRequest } from "@/lib/client/api";
 
-const baseAuthURL = `${envSettings.backendHost}auth/`;
+const AUTH_BASE = "auth/";
 
 export interface IAuthCredentials {
   email: string;
@@ -16,79 +14,42 @@ export interface IAuthResponse {
 export async function loginUser(
   credentials: IAuthCredentials
 ): Promise<IDataResponse<IAuthResponse>> {
-  const axiosRes: IDataResponse<IAuthResponse> = await axiosRequest(
-    "POST",
-    `${baseAuthURL}login`,
-    credentials
-  );
-
-  if (!axiosRes.success || !axiosRes.data) {
-    return {
-      success: false,
-      message: axiosRes?.message ?? "Failed to login",
-    };
-  }
-
-  return {
-    success: true,
-    message: axiosRes.message ?? "Login successful",
-    data: axiosRes.data,
-  };
+  return clientApiRequest<IAuthCredentials, IAuthResponse>({
+    method: "POST",
+    path: `${AUTH_BASE}login`,
+    body: credentials,
+    successMessage: "Login successful",
+  });
 }
 
 export async function registerUser(
   credentials: IAuthCredentials
 ): Promise<IDataResponse<IAuthResponse>> {
-  const axiosRes: IDataResponse<IAuthResponse> = await axiosRequest(
-    "POST",
-    `${baseAuthURL}register`,
-    credentials
-  );
-
-  if (!axiosRes.success || !axiosRes.data) {
-    return {
-      success: false,
-      message: axiosRes?.message ?? "Failed to register",
-    };
-  }
-
-  return {
-    success: true,
-    message: axiosRes.message ?? "Registration successful",
-    data: axiosRes.data,
-  };
+  return clientApiRequest<IAuthCredentials, IAuthResponse>({
+    method: "POST",
+    path: `${AUTH_BASE}register`,
+    body: credentials,
+    successMessage: "Registration successful",
+  });
 }
-
-
-
 
 export async function logoutUser(): Promise<IBasicResponse> {
-  const axiosRes: IBasicResponse = await axiosRequest(
-    "POST",
-    `${baseAuthURL}logout`,
-    {}
-  );
+  const res = await clientApiRequest<undefined, null>({
+    method: "POST",
+    path: `${AUTH_BASE}logout`,
+    successMessage: "Logout successful",
+  });
 
-  if (!axiosRes.success) {
-    return {
-      success: false,
-      message: axiosRes?.message ?? "Failed to logout",
-    };
+  if (!res.success) {
+    return { success: false, message: res.message };
   }
 
-  return {
-    success: true,
-    message: axiosRes.message ?? "Logout successful",
-  };
+  return { success: true, message: res.message ?? "Logout successful" };
 }
 
-
 export async function getCurrentUser(): Promise<IDataResponse<ISignedPayload>> {
-  const axiosRes: IDataResponse<ISignedPayload> = await axiosRequest(
-    "GET",
-    `${baseAuthURL}me`,
-    {}
-  );
-
-  return axiosRes;
+  return clientApiRequest<undefined, ISignedPayload>({
+    method: "GET",
+    path: `${AUTH_BASE}me`,
+  });
 }

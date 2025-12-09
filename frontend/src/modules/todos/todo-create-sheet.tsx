@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { Plus, Loader2, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { handleAction } from "@/lib/ui/handle-action";
 
 const formSchema = z.object({
   title: z
@@ -72,16 +73,16 @@ export function TodoCreateSheet() {
       };
 
       startTransition(async () => {
-        const result = await createTodo(todoData);
 
-        if (result.success) {
-          toast.success("Todo created successfully");
-        //   setOpen(false);
-          form.reset();
-          router.refresh();
-        } else {
-          toast.error(result.message || "Failed to create todo");
-        }
+         await handleAction(() => createTodo(todoData), {
+           successMessage: "Todo created successfully",
+           onSuccess: () => {
+             form.reset();
+             // setOpen(false);
+             router.refresh();
+           },
+         });
+        const result = await createTodo(todoData);
       });
     },
   });

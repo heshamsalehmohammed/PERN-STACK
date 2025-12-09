@@ -17,6 +17,7 @@ import {
 import { loginUser } from "./auth.actions";
 import { toast } from "sonner";
 import { Loader2, LogIn } from "lucide-react";
+import { handleAction } from "@/lib/ui/handle-action";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -37,20 +38,20 @@ export function LoginForm() {
     },
     onSubmit: async ({ value }) => {
       startTransition(async () => {
-        const res = await loginUser({
-          email: value.email,
-          password: value.password,
-        });
-
-        if (!res.success || !res.data) {
-          toast.error(res.message ?? "Failed to login");
-          return;
-        }
-
-        toast.success("Logged in successfully");
-        // redirect to todos after login
-        router.push("/todos");
-        router.refresh();
+        await handleAction(
+          () =>
+            loginUser({
+              email: value.email,
+              password: value.password,
+            }),
+          {
+            successMessage: "Logged in successfully",
+            onSuccess: () => {
+              router.push("/todos");
+              router.refresh();
+            },
+          }
+        );
       });
     },
   });
@@ -116,7 +117,11 @@ export function LoginForm() {
           />
         </FieldGroup>
 
-        <Button type="submit" className="w-full" disabled={pending}>
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={pending}
+        >
           {pending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

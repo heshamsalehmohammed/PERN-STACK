@@ -17,6 +17,7 @@ import {
 import { registerUser } from "./auth.actions";
 import { toast } from "sonner";
 import { Loader2, UserPlus } from "lucide-react";
+import { handleAction } from "@/lib/ui/handle-action";
 
 const registerSchema = z
   .object({
@@ -44,20 +45,20 @@ export function RegisterForm() {
     },
     onSubmit: async ({ value }) => {
       startTransition(async () => {
-        const res = await registerUser({
-          email: value.email,
-          password: value.password,
-        });
-
-        if (!res.success || !res.data) {
-          toast.error(res.message ?? "Failed to register");
-          return;
-        }
-
-        toast.success("Account created successfully");
-        // After register, send to /todos or /auth/login (your choice)
-        router.push("/todos");
-        router.refresh();
+        await handleAction(
+          () =>
+            registerUser({
+              email: value.email,
+              password: value.password,
+            }),
+          {
+            successMessage: "Account created successfully",
+            onSuccess: () => {
+              router.push("/todos");
+              router.refresh();
+            },
+          }
+        );
       });
     },
   });
@@ -148,7 +149,11 @@ export function RegisterForm() {
           />
         </FieldGroup>
 
-        <Button type="submit" className="w-full" disabled={pending}>
+        <Button
+          type="submit"
+          className="w-full cursor-pointer"
+          disabled={pending}
+        >
           {pending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

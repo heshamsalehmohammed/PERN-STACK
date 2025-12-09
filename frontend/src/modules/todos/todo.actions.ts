@@ -1,161 +1,65 @@
-'use server';
+"use server";
 
-import axiosRequest from '@/helpers/axios';
-import envSettings from '@/config/envSettings';
-import { revalidatePath } from 'next/cache';
-
-const baseUserURL = `${envSettings.backendHost}todos/`;
+import { serverApiRequest } from "@/lib/server/api";
 
  
 export async function getTodos(
   params?: URLSearchParams
 ): Promise<IDataResponse<ITodo[]>> {
+  const query = params ? `?${params.toString()}` : "";
 
-  const headers = {
-    'access-key': envSettings.accessKey,
-  };
-
-  const axiosRes: IDataResponse<ITodo[]> = await axiosRequest(
-    'GET',
-    `${baseUserURL}${params ? `?${params}` : ''}`,
-    {},
-    headers
-  );
-
-  if (!axiosRes.success) {
-    return {
-      success: false,
-      message: axiosRes?.message,
-    };
-  }
-
-  const { data } = axiosRes;
-
-  if (!data) {
-    return {
-      success: false,
-      message: 'No chains found',
-    };
-  }
-
-  return {
-    success: true,
-    message: 'Chains found success',
-    data,
-  };
+  return serverApiRequest<undefined, ITodo[]>({
+    method: "GET",
+    path: `todos/${query}`,
+    successMessage: "Todos fetched successfully",
+  });
 }
 
 export async function createTodo(
   todoData: ITodoInsertDTO
 ): Promise<IDataResponse<ITodo>> {
-  const headers = {
-    'access-key': envSettings.accessKey,
-  };
-
-  const axiosRes: IDataResponse<ITodo> = await axiosRequest(
-    'POST',
-    baseUserURL,
-    todoData,
-    headers
-  );
-
-  if (!axiosRes.success) {
-    return {
-      success: false,
-      message: axiosRes?.message,
-    };
-  }
-
-  revalidatePath('/todos');
-
-  return {
-    success: true,
-    message: 'Todo created successfully',
-    data: axiosRes.data,
-  };
+  return serverApiRequest<ITodoInsertDTO, ITodo>({
+    method: "POST",
+    path: "todos/",
+    body: todoData,
+    revalidate: "/todos",
+    successMessage: "Todo created successfully",
+  });
 }
 
 export async function deleteTodo(id: number): Promise<IBasicResponse> {
-  const headers = {
-    'access-key': envSettings.accessKey,
-  };
+  const res = await serverApiRequest<undefined, null>({
+    method: "DELETE",
+    path: `todos/${id}`,
+    revalidate: "/todos",
+    successMessage: "Todo deleted successfully",
+  });
 
-  const axiosRes: IBasicResponse = await axiosRequest(
-    'DELETE',
-    `${baseUserURL}${id}`,
-    {},
-    headers
-  );
-
-  if (!axiosRes.success) {
-    return {
-      success: false,
-      message: axiosRes?.message,
-    };
+  // Narrow to IBasicResponse
+  if (!res.success) {
+    return { success: false, message: res.message };
   }
 
-  revalidatePath('/todos');
-
-  return {
-    success: true,
-    message: 'Todo deleted successfully',
-  };
+  return { success: true, message: res.message ?? "Todo deleted successfully" };
 }
 
 export async function getTodoById(id: number): Promise<IDataResponse<ITodo>> {
-  const headers = {
-    'access-key': envSettings.accessKey,
-  };
-
-  const axiosRes: IDataResponse<ITodo> = await axiosRequest(
-    'GET',
-    `${baseUserURL}${id}`,
-    {},
-    headers
-  );
-
-  if (!axiosRes.success) {
-    return {
-      success: false,
-      message: axiosRes?.message,
-    };
-  }
-
-  return {
-    success: true,
-    message: 'Todo fetched successfully',
-    data: axiosRes.data,
-  };
+  return serverApiRequest<undefined, ITodo>({
+    method: "GET",
+    path: `todos/${id}`,
+    successMessage: "Todo fetched successfully",
+  });
 }
 
 export async function updateTodo(
   id: number,
   todoData: Partial<ITodoInsertDTO>
 ): Promise<IDataResponse<ITodo>> {
-  const headers = {
-    'access-key': envSettings.accessKey,
-  };
-
-  const axiosRes: IDataResponse<ITodo> = await axiosRequest(
-    'PUT',
-    `${baseUserURL}${id}`,
-    todoData,
-    headers
-  );
-
-  if (!axiosRes.success) {
-    return {
-      success: false,
-      message: axiosRes?.message,
-    };
-  }
-
-  revalidatePath('/todos');
-
-  return {
-    success: true,
-    message: 'Todo updated successfully',
-    data: axiosRes.data,
-  };
+  return serverApiRequest<Partial<ITodoInsertDTO>, ITodo>({
+    method: "PUT",
+    path: `todos/${id}`,
+    body: todoData,
+    revalidate: "/todos",
+    successMessage: "Todo updated successfully",
+  });
 }
-
