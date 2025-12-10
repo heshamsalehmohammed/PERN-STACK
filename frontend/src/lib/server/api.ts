@@ -3,6 +3,8 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import type { Method } from "axios";
+import { redirect } from "next/navigation";
+
 
 import axiosRequest from "@/helpers/axios";
 import envSettings from "@/config/envSettings";
@@ -12,6 +14,7 @@ interface ServerApiOptions<B, T> {
   path: string; // e.g. "todos/", "todos/1", "auth/me"
   body?: B;
   revalidate?: string; // e.g. "/todos"
+  redirectPath?: string; // e.g. "/todos"
   successMessage?: string;
 }
 
@@ -25,7 +28,8 @@ interface ServerApiOptions<B, T> {
 export async function serverApiRequest<B = any, T = any>(
   options: ServerApiOptions<B, T>
 ): Promise<IDataResponse<T>> {
-  const { method, path, body, revalidate, successMessage } = options;
+  const { method, path, body, revalidate, successMessage, redirectPath } =
+    options;
 
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
@@ -56,6 +60,10 @@ export async function serverApiRequest<B = any, T = any>(
 
   if (revalidate) {
     revalidatePath(revalidate);
+  }
+
+  if (redirectPath) {
+    redirect(redirectPath);
   }
 
   return {
