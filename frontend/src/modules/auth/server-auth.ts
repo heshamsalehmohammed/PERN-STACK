@@ -1,24 +1,20 @@
 import { cookies } from "next/headers";
+import { jwtVerify, JWTPayload } from "jose";
 
-/**
- * Decode JWT payload from the cookie (UI-only, no signature verification).
- * Real security is enforced in your Express backend + middleware.
- */
+const secretKey = process.env.ACCESS_JWT_SECRET;
+if (!secretKey) throw new Error("FATAL: ACCESS_JWT_SECRET is not configured.");
+const JWT_SECRET_KEY = new TextEncoder().encode(secretKey);
+
+
 export async function getServerAuthUser(): Promise<ISignedPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return null;
 
   try {
-    const [, payloadPart] = token.split(".");
-    if (!payloadPart) return null;
-
-    // base64url decode
-    const json = Buffer.from(payloadPart, "base64url").toString("utf8");
-    const payload = JSON.parse(json) as ISignedPayload;
-
-    return payload;
-  } catch {
+    const { payload } = await jwtVerify(token, JWT_SECRET_KEY);
+    return payload as unknown as ISignedPayload;
+  } catch (e) {
     return null;
   }
 }
