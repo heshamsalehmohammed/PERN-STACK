@@ -1,16 +1,45 @@
 import type { Request, Response } from "express";
-
 import type UserService from "./user.services";
 import { config } from "../../config/general.config";
 
 const isProd = process.env.NODE_ENV === "production";
-
 
 export default class UserController {
   private readonly userService: UserService;
 
   constructor(userService: UserService) {
     this.userService = userService;
+  }
+
+
+  private sendAuthResponse(
+    res: Response,
+    token: string,
+    user: ISignedPayload,
+    message: string
+  ) {
+    if (config.auth.useCookies) {
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+        path: "/",
+        maxAge: config.jwtOptions.expireTime * 1000,
+      });
+
+      return res.status(200).json({
+        success: true,
+        message,
+        data: { user },
+      });
+    }
+
+    // Token in response body (no cookies)
+    return res.status(200).json({
+      success: true,
+      message,
+      data: { user, token },
+    });
   }
 
   public loginUserController = async (
@@ -30,21 +59,7 @@ export default class UserController {
     }
 
     const { token, user } = result.data;
-
-    // Cookie name must match your authentication middleware: req.cookies.token
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: config.jwtOptions.expireTime * 1000,
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      data: { user },
-    });
+    this.sendAuthResponse(res, token, user, "Login successful");
   };
 
   public registerUserController = async (
@@ -64,28 +79,21 @@ export default class UserController {
     }
 
     const { token, user } = result.data;
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: config.jwtOptions.expireTime * 1000,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Registration successful",
-      data: { user },
-    });
+    this.sendAuthResponse(res, token, user, "Registration successful");
   };
 
   public logoutUserController = async (
     _req: Request,
     res: Response<IBasicResponse>
   ): Promise<void> => {
-    res.clearCookie("token", { path: "/" });
-    res.status(200).json({ success: true, message: "Logged out successfully" });
+    if (config.auth.useCookies) {
+      res.clearCookie("token", { path: "/" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
   };
 
   public getCurrentUserController = async (

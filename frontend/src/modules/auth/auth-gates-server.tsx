@@ -1,6 +1,6 @@
 // src/modules/auth/auth-gates-server.tsx
 import React from "react";
-import { checkCombination, PermissionCombinationIdentifier } from "./permission-helpers";
+import { checkCombination, PermissionCombinationIdentifier, UserPermissions, UserRoles } from "./permission-helpers";
 import { getServerAuthUser } from "./server-auth";
 
 //
@@ -45,8 +45,8 @@ export async function AuthenticationGateServer({
 //
 interface AuthorizationGateServerProps {
   children: React.ReactElement;
-  permissions?: string[];
-  roles?: string[];
+  permissions?: (typeof UserPermissions)[keyof typeof UserPermissions][];
+  roles?: (typeof UserRoles)[keyof typeof UserRoles][];
   permissionsAllowIf?: PermissionCombinationIdentifier;
   rolesAllowIf?: PermissionCombinationIdentifier;
   noAccessMode?: "hide" | "applyProps";

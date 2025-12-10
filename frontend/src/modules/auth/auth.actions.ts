@@ -1,7 +1,5 @@
 import { clientApiRequest } from "@/lib/client/api";
 
-const AUTH_BASE = "auth/";
-
 export interface IAuthCredentials {
   email: string;
   password: string;
@@ -9,28 +7,79 @@ export interface IAuthCredentials {
 
 export interface IAuthResponse {
   user: ISignedPayload;
+  token?: string; // for the backend that returns token in body
+}
+
+const AUTH_BASE = "auth/";
+
+async function syncTokenCookieFromResponseToken(token?: string) {
+  try {
+    if (!token) {
+      await fetch("/api/auth/set-cookie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "clear" }),
+      });
+
+      return;
+    }
+
+    await fetch("/api/auth/set-cookie", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, mode: "set" }),
+      credentials: "include",
+    });
+  } catch {}
 }
 
 export async function loginUser(
   credentials: IAuthCredentials
 ): Promise<IDataResponse<IAuthResponse>> {
-  return clientApiRequest<IAuthCredentials, IAuthResponse>({
+  const res = await clientApiRequest<IAuthCredentials, IAuthResponse>({
     method: "POST",
     path: `${AUTH_BASE}login`,
     body: credentials,
     successMessage: "Login successful",
   });
+
+  if (!res.success || !res.data) {
+    return {
+      success: false,
+      message: res.message ?? "Failed to login",
+    };
+  }
+
+  // ✅ Fallback: if the BE returns token in payload, set the cookie ourselves
+  if (res.data.token) {
+    await syncTokenCookieFromResponseToken(res.data.token);
+  }
+
+  return res;
 }
 
 export async function registerUser(
   credentials: IAuthCredentials
 ): Promise<IDataResponse<IAuthResponse>> {
-  return clientApiRequest<IAuthCredentials, IAuthResponse>({
+  const res = await clientApiRequest<IAuthCredentials, IAuthResponse>({
     method: "POST",
     path: `${AUTH_BASE}register`,
     body: credentials,
     successMessage: "Registration successful",
   });
+
+  if (!res.success || !res.data) {
+    return {
+      success: false,
+      message: res.message ?? "Failed to register",
+    };
+  }
+
+  if (res.data.token) {
+    await syncTokenCookieFromResponseToken(res.data.token);
+  }
+
+  return res;
 }
 
 export async function logoutUser(): Promise<IBasicResponse> {
@@ -41,15 +90,16 @@ export async function logoutUser(): Promise<IBasicResponse> {
   });
 
   if (!res.success) {
-    return { success: false, message: res.message };
+    return {
+      success: false,
+      message: res.message ?? "Failed to logout",
+    };
   }
 
-  return { success: true, message: res.message ?? "Logout successful" };
-}
+  await syncTokenCookieFromResponseToken(undefined);
 
-export async function getCurrentUser(): Promise<IDataResponse<ISignedPayload>> {
-  return clientApiRequest<undefined, ISignedPayload>({
-    method: "GET",
-    path: `${AUTH_BASE}me`,
-  });
+  return {
+    success: true,
+    message: res.message ?? "Logout successful",
+  };
 }

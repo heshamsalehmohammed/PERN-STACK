@@ -1,11 +1,23 @@
+export enum UserRoles {
+  MASTER = "master",
+  ADMIN = "admin",
+  USER = "user",
+}
+
+export enum UserPermissions {
+  CAN_ADD_TODO = "CAN_ADD_TODO",
+  CAN_EDIT_TODO = "CAN_EDIT_TODO",
+  CAN_DELETE_TODO = "CAN_DELETE_TODO",
+  CAN_VIEW_TODO = "CAN_VIEW_TODO",
+}
+
+
 export enum PermissionCombinationIdentifier {
   HAS_ANY = "HAS_ANY",
   HAS_ALL = "HAS_ALL",
   DOES_NOT_HAVE_ANY = "DOES_NOT_HAVE_ANY",
   DOES_NOT_HAVE_ALL = "DOES_NOT_HAVE_ALL",
 }
-
-
 
 export function checkCombination(
   userValues: string[],

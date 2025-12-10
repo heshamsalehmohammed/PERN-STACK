@@ -5,6 +5,7 @@ interface ISignedPayload {
   permissions?: TUserPermission[];
   iat?: number;
   exp?: number;
+  token?: string;
 }
 type TUserRole = "master" | "admin" | "user";
 type TUserPermission =

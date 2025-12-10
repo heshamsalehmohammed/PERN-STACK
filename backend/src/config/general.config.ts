@@ -33,26 +33,29 @@ updateEnv();
 
 export const config: TServerConfig = {
   serverOptions: {
-    port: parseInt(process.env.SERVER_PORT || '3001', 10),
-    internalKey: process.env.INTERNAL_KEY || 'xK9mLp2vQwRt7nYhBjFc',
+    port: parseInt(process.env.SERVER_PORT || "3001", 10),
+    internalKey: process.env.INTERNAL_KEY || "xK9mLp2vQwRt7nYhBjFc",
   },
 
   jwtOptions: {
-    tokenSecret: process.env.ACCESS_JWT_SECRET || 'Hs5uWx8zAqDe3gNkPvMr',
+    tokenSecret: process.env.ACCESS_JWT_SECRET || "Hs5uWx8zAqDe3gNkPvMr",
     expireTime:
-      parseInt(process.env.ACCESS_JWT_DURATION || '0', 10) * 60 || 60 * 120,
+      parseInt(process.env.ACCESS_JWT_DURATION || "0", 10) * 60 || 60 * 120,
   },
 
   databaseOptions: {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    username: process.env.DB_USER_NAME || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'todo_app',
-    schema: 'main',
+    host: process.env.DB_HOST || "localhost",
+    port: parseInt(process.env.DB_PORT || "5432", 10),
+    username: process.env.DB_USER_NAME || "postgres",
+    password: process.env.DB_PASSWORD || "postgres",
+    database: process.env.DB_NAME || "todo_app",
+    schema: "main",
   },
 
   fileSystem: {
-    localStorage: process.env.LOCAL_STORAGE || '',
+    localStorage: process.env.LOCAL_STORAGE || "",
+  },
+  auth: {
+    useCookies: false,
   },
 };

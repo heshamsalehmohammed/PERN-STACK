@@ -33,7 +33,7 @@ export default async function TodosPage({ searchParams }: TodosPageProps) {
 }
 
 async function FetchTodosWrapper({ status }: { status?: string }) {
-  await getResourceAccessLevel();
+  /* await getResourceAccessLevel(); */  // no need for this anymore 
 
   const urlParams = new URLSearchParams();
   if (status) {

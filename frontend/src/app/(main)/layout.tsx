@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-import { AuthenticationGateServer } from "@/modules/auth/auth-gates-server";
+import { AuthenticationGateServer, AuthorizationGateServer } from "@/modules/auth/auth-gates-server";
 import LogoutButton from "@/modules/auth/LogoutButton";
+import { PermissionCombinationIdentifier, UserRoles } from "@/modules/auth/permission-helpers";
 
 export default function MainLayout({
   children,
@@ -24,6 +25,14 @@ export default function MainLayout({
             </Link>
 
             <nav className="flex items-center gap-6">
+              <AuthorizationGateServer roles={[UserRoles.MASTER]} rolesAllowIf={PermissionCombinationIdentifier.HAS_ALL}>
+                <Link
+                  href="/users"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Users
+                </Link>
+              </AuthorizationGateServer>
               <AuthenticationGateServer>
                 <Link
                   href="/todos"

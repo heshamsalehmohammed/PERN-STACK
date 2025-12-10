@@ -28,6 +28,9 @@ export const serverConfigSchema = z.object({
   jwtOptions: jwtOptionsSchema,
   databaseOptions: databaseOptionsSchema,
   fileSystem: fileSystemSchema,
+  auth: z.object({
+    useCookies: z.boolean(),
+  }),
 });
 
 export type TServerConfig = z.infer<typeof serverConfigSchema>;
