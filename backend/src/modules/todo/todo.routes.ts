@@ -1,11 +1,8 @@
-import { Router } from 'express';
+import { Router } from "express";
 
-import type TodoController from './todo.controller';
-import { authorization } from '@/src/middlewares/authorization';
-import { UserPermissionEnum } from '../user/user.const';
-
-
-
+import type TodoController from "./todo.controller";
+import { authorization } from "@/src/middlewares/authorization";
+import { UserPermissionEnum, UserRoleEnum } from "../user/user.const";
 
 export default class TodoRoutes {
   public readonly router: Router;
@@ -21,18 +18,47 @@ export default class TodoRoutes {
   private initializeRoutes(): void {
     this.router.get(
       "/",
-/*       authorization({
+      authorization({
+        roles: [UserRoleEnum.master],
         permissions: [UserPermissionEnum.CAN_VIEW_TODO],
-      }), */
+      }),
       this.todoController.getAllTodosController
     );
 
-    this.router.get('/:todoId', this.todoController.getTodoByIdController);
+    this.router.get(
+      "/:todoId",
+      authorization({
+        roles: [UserRoleEnum.master],
+        permissions: [UserPermissionEnum.CAN_VIEW_TODO],
+      }),
+      this.todoController.getTodoByIdController
+    );
 
-    this.router.post('/', this.todoController.createTodoController);
+    this.router.post(
+      "/",
+      authorization({
+        roles: [UserRoleEnum.master],
+        permissions: [UserPermissionEnum.CAN_ADD_TODO],
+      }),
+      this.todoController.createTodoController
+    );
 
-    this.router.put('/:todoId', this.todoController.updateTodoByIdController);
+    this.router.put(
+      "/:todoId",
+      authorization({
+        roles: [UserRoleEnum.master],
+        permissions: [UserPermissionEnum.CAN_EDIT_TODO],
+      }),
+      this.todoController.updateTodoByIdController
+    );
 
-    this.router.delete('/:todoId', this.todoController.deleteTodoByIdController);
+    this.router.delete(
+      "/:todoId",
+      authorization({
+        roles: [UserRoleEnum.master],
+        permissions: [UserPermissionEnum.CAN_DELETE_TODO],
+      }),
+      this.todoController.deleteTodoByIdController
+    );
   }
 }

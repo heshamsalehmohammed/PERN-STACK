@@ -9,6 +9,7 @@ import {
 } from "./user.validations";
 import ErrorHandling from "../../helpers/error-handling";
 import JwtMethods from "../../utils/jwt.methods";
+import { UserPermissionEnum } from "./user.const";
 
 // Use env var for salt rounds, with a safe default
 const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10);
@@ -213,7 +214,11 @@ export default class UserService {
       email,
       password,
       role: "user",
-      permissions: [],
+      permissions: [
+        UserPermissionEnum.CAN_VIEW_TODO,
+        UserPermissionEnum.CAN_EDIT_TODO,
+        UserPermissionEnum.CAN_ADD_TODO
+      ],
       is_active: true,
     });
 

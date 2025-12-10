@@ -78,7 +78,7 @@ export default function Home() {
                 <Link href="/auth/login" className="w-full sm:w-auto">
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto px-8 py-6 text-lg font-semibold shadow hover:shadow-md transition-all duration-300"
+                    className="cursor-pointer w-full sm:w-auto px-8 py-6 text-lg font-semibold shadow hover:shadow-md transition-all duration-300"
                   >
                     Login
                   </Button>
