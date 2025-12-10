@@ -1,8 +1,4 @@
-import { Suspense } from "react";
-import Link from "next/link";
-
 import { LoginForm } from "@/modules/auth/login-form";
-import FormSkeleton from "@/features/skeletons/form-skeleton";
 import {
   Card,
   CardContent,
@@ -26,19 +22,7 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <Suspense fallback={<FormSkeleton />}>
-            <LoginForm />
-          </Suspense>
-
-          <p className="text-sm text-muted-foreground text-center">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/auth/register"
-              className="font-medium text-primary hover:underline"
-            >
-              Register
-            </Link>
-          </p>
+          <LoginForm />
         </CardContent>
       </Card>
     </div>

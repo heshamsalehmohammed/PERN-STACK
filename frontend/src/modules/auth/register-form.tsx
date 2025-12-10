@@ -18,6 +18,7 @@ import { registerUser } from "./auth.actions";
 import { toast } from "sonner";
 import { Loader2, UserPlus } from "lucide-react";
 import { handleAction } from "@/lib/ui/handle-action";
+import Link from "next/link";
 
 const registerSchema = z
   .object({
@@ -64,109 +65,134 @@ export function RegisterForm() {
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        form.handleSubmit();
-      }}
-      className="w-full max-w-md space-y-6"
-    >
-      <fieldset disabled={pending} className="space-y-6 disabled:opacity-50">
-        <FieldGroup className="gap-5">
-          <form.Field
-            name="email"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="email"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          />
+    <>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+        className="w-full max-w-md space-y-6"
+      >
+        <fieldset disabled={pending} className="space-y-6 disabled:opacity-50">
+          <FieldGroup className="gap-5">
+            <form.Field
+              name="email"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type="email"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
 
-          <form.Field
-            name="password"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="password"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    autoComplete="new-password"
-                    placeholder="At least 8 characters"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          />
+            <form.Field
+              name="password"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type="password"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      autoComplete="new-password"
+                      placeholder="At least 8 characters"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
 
-          <form.Field
-            name="confirmPassword"
-            children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Confirm Password</FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="password"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    autoComplete="new-password"
-                    placeholder="Repeat your password"
-                  />
-                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                </Field>
-              );
-            }}
-          />
-        </FieldGroup>
+            <form.Field
+              name="confirmPassword"
+              children={(field) => {
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field data-invalid={isInvalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Confirm Password
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type="password"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={isInvalid}
+                      autoComplete="new-password"
+                      placeholder="Repeat your password"
+                    />
+                    {isInvalid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
+          </FieldGroup>
 
-        <Button
-          type="submit"
-          className="w-full cursor-pointer"
-          disabled={pending}
-        >
-          {pending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
-            </>
-          ) : (
-            <>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Create account
-            </>
-          )}
-        </Button>
-      </fieldset>
-    </form>
+          <Button
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={pending}
+          >
+            {pending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              <>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Create account
+              </>
+            )}
+          </Button>
+        </fieldset>
+      </form>
+      <p className="text-sm text-muted-foreground text-center">
+        Already have an account?{" "}
+        {pending ? (
+          <span className="font-medium text-primary opacity-50 cursor-not-allowed">
+            Sign in
+          </span>
+        ) : (
+          <Link
+            href="/auth/login"
+            className="font-medium text-primary hover:underline"
+          >
+            Sign in
+          </Link>
+        )}
+      </p>
+    </>
   );
 }
