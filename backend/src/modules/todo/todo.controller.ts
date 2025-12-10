@@ -1,6 +1,5 @@
-import type { Request, Response } from 'express';
-
-import type TodoService from './todo.services';
+import type { Request, Response } from "express";
+import type TodoService from "./todo.services";
 
 export default class TodoController {
   private readonly todoService: TodoService;
@@ -13,10 +12,9 @@ export default class TodoController {
    * Get all todos
    */
   public getAllTodosController = async (
-    req: Request<Request, unknown, string>,
-    res: Response<IDataResponse<ITodo[]>>,
+    req: Request, 
+    res: Response<IDataResponse<ITodo[]>>
   ): Promise<void> => {
-    // get status from query params
     const status = req.query.status as TTodoStatus | undefined;
     const result = await this.todoService.getAllTodos(status);
     res.status(result.success ? 200 : 400).json(result);
@@ -27,7 +25,7 @@ export default class TodoController {
    */
   public getTodoByIdController = async (
     req: Request<{ todoId: string }>,
-    res: Response<IDataResponse<ITodo>>,
+    res: Response<IDataResponse<ITodo>>
   ): Promise<void> => {
     const todoId = parseInt(req.params.todoId, 10);
     const result = await this.todoService.getTodoById(todoId);
@@ -39,10 +37,9 @@ export default class TodoController {
    */
   public createTodoController = async (
     req: Request<unknown, unknown, ITodoInsertDTO>,
-    res: Response<IDataResponse<ITodo>>,
+    res: Response<IDataResponse<ITodo>>
   ): Promise<void> => {
     const result = await this.todoService.createTodo(req.body);
-
     res.status(result.success ? 201 : 400).json(result);
   };
 
@@ -51,7 +48,7 @@ export default class TodoController {
    */
   public updateTodoByIdController = async (
     req: Request<{ todoId: string }, unknown, ITodoUpdateDTO>,
-    res: Response<IDataResponse<ITodo>>,
+    res: Response<IDataResponse<ITodo>>
   ): Promise<void> => {
     const todoId = parseInt(req.params.todoId, 10);
     const result = await this.todoService.updateTodoById(todoId, req.body);
@@ -63,7 +60,7 @@ export default class TodoController {
    */
   public deleteTodoByIdController = async (
     req: Request<{ todoId: string }>,
-    res: Response<IBasicResponse>,
+    res: Response<IBasicResponse>
   ): Promise<void> => {
     const todoId = parseInt(req.params.todoId, 10);
     const result = await this.todoService.deleteTodoById(todoId);
