@@ -1,3 +1,5 @@
+// src/features/todos/todo-row-actions.tsx
+
 "use client";
 
 import { EllipsisIcon, PencilIcon, TrashIcon } from "lucide-react";
@@ -28,6 +30,13 @@ import {
 import { TodoEditSheet } from "./todo-edit-sheet";
 import FullScreenLoader from "@/features/dialogs/loading-dialog";
 import { handleAction } from "@/lib/ui/handle-action";
+// Import the necessary components and constants
+import { AuthorizationGateClient } from "@/modules/auth/auth-gates-client";
+import {
+  PermissionCombinationIdentifier,
+  UserPermissions,
+  UserRoles,
+} from "@/modules/auth/permission-helpers";
 
 interface TodoRowActionsProps {
   row: Row<ITodo>;
@@ -73,20 +82,33 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuGroup>
-            <DropdownMenuItem onSelect={onEditClick}>
-              <PencilIcon className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onSelect={() => setShowDeleteDialog(true)}
+            <AuthorizationGateClient
+              roles={[UserRoles.MASTER]}
+              permissions={[UserPermissions.CAN_EDIT_TODO]}
             >
-              <TrashIcon className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onEditClick}>
+                <PencilIcon className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+            </AuthorizationGateClient>
+          </DropdownMenuGroup>
+
+          <DropdownMenuGroup>
+            <AuthorizationGateClient
+              roles={[UserRoles.MASTER]}
+              permissions={[UserPermissions.CAN_DELETE_TODO]}
+            >
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onSelect={() => setShowDeleteDialog(true)}
+                >
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </>
+            </AuthorizationGateClient>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>

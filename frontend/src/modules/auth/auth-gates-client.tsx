@@ -4,20 +4,9 @@ import React from "react";
 import { useAuth } from "./auth-provider";
 import { checkCombination, PermissionCombinationIdentifier, UserPermissions, UserRoles } from "./permission-helpers";
 
-//
-// AuthenticationGateClient
-//
 interface AuthenticationGateClientProps {
   children: React.ReactNode;
-  /**
-   * If true (default): show children only when user IS authenticated.
-   * If false: show children only when user is NOT authenticated.
-   */
   requireAuth?: boolean;
-  /**
-   * What to render if condition is not met.
-   * Default: render nothing.
-   */
   fallback?: React.ReactNode;
 }
 
@@ -40,9 +29,7 @@ export function AuthenticationGateClient({
   return <>{children}</>;
 }
 
-//
-// AuthorizationGateClient
-//
+
 interface AuthorizationGateClientProps {
   children: React.ReactElement;
   permissions?: (typeof UserPermissions)[keyof typeof UserPermissions][];

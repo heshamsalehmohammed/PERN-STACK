@@ -3,92 +3,66 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "@/features/data-table";
-import { TodoRowActions } from "./todo-row-actions";
+import { UserRowActions } from "./user-row-actions";
+import { ALL_PERMISSIONS } from "./user.const";
 
-const statusVariants: Record<TTodoStatus, "default" | "secondary" | "destructive" | "outline"> = {
-  pending: "outline",
-  "in-progress": "secondary",
-  completed: "default",
-  cancelled: "destructive",
-};
+const PERMISSION_LABEL_MAP = ALL_PERMISSIONS.reduce((map, perm) => {
+  map[perm.value] = perm.label;
+  return map;
+}, {} as Record<TUserPermission, string>);
 
-export const todoColumns: ColumnDef<ITodo>[] = [
+export const userColumns: ColumnDef<IUser>[] = [
   {
-    accessorKey: "todo_id",
+    accessorKey: "user_id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
     ),
-    cell: ({ row }) => <span className="font-medium">{row.getValue("todo_id")}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium">{row.getValue("user_id")}</span>
+    ),
   },
   {
-    accessorKey: "title",
+    accessorKey: "email",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <DataTableColumnHeader column={column} title="Email" />
     ),
     cell: ({ row }) => (
       <div className="max-w-[300px] truncate font-medium">
-        {row.getValue("title")}
+        {row.getValue("email")}
       </div>
     ),
   },
   {
-    accessorKey: "description",
+    accessorKey: "role",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Description" />
+      <DataTableColumnHeader column={column} title="Role" />
     ),
     cell: ({ row }) => (
       <div className="max-w-[400px] truncate text-muted-foreground">
-        {row.getValue("description") || "-"}
+        {row.getValue("role") || "-"}
       </div>
     ),
   },
   {
-    accessorKey: "status",
+    accessorKey: "permissions",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Permissions" />
     ),
     cell: ({ row }) => {
-      const status = row.getValue("status") as TTodoStatus;
+      const permissions: TUserPermission[] | null | undefined =
+        row.getValue("permissions");
+      let permissionString = "-";
+
+      if (permissions && permissions.length > 0) {
+        const mappedLabels = permissions.map(
+          (permKey) => PERMISSION_LABEL_MAP[permKey] || permKey 
+        );
+        permissionString = mappedLabels.join(", ");
+      }
       return (
-        <Badge variant={statusVariants[status]}>
-          {status}
-        </Badge>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
-    accessorKey: "priority",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Priority" />
-    ),
-    cell: ({ row }) => {
-      const priority = row.getValue("priority") as number;
-      return (
-        <Badge variant={priority >= 3 ? "destructive" : priority >= 2 ? "secondary" : "outline"}>
-          {priority}
-        </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: "due_date",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Due Date" />
-    ),
-    cell: ({ row }) => {
-      const dueDate = row.getValue("due_date") as Date | undefined;
-      if (!dueDate) return <span className="text-muted-foreground">-</span>;
-      return (
-        <span>
-          {new Date(dueDate).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
+        <div className="max-w-[400px] text-sm text-muted-foreground">
+          {permissionString}
+        </div>
       );
     },
   },

@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { deleteTodo, getTodoById } from "./todo.actions";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -25,28 +24,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { TodoEditSheet } from "./todo-edit-sheet";
 import FullScreenLoader from "@/features/dialogs/loading-dialog";
 import { handleAction } from "@/lib/ui/handle-action";
+import { deleteUser, getUserById } from "./user.actions";
+import { UserEditSheet } from "./user-edit-sheet";
 
-interface TodoRowActionsProps {
-  row: Row<ITodo>;
+interface UserRowActionsProps {
+  row: Row<IUser>;
 }
 
-export function TodoRowActions({ row }: TodoRowActionsProps) {
+export function UserRowActions({ row }: UserRowActionsProps) {
   const rowData = row.original;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditSheet, setShowEditSheet] = useState(false);
-  const [todoPromise, setTodoPromise] = useState<Promise<
-    IDataResponse<ITodo>
+  const [userPromise, setUserPromise] = useState<Promise<
+    IDataResponse<IUser>
   > | null>(null);
 
   function onDelete() {
     startTransition(async () => {
-      await handleAction(() => deleteTodo(rowData.todo_id), {
-        successMessage: "Todo deleted successfully",
+      await handleAction(() => deleteUser(rowData.user_id), {
+        successMessage: "User deleted successfully",
         onSuccess: () => {
           router.refresh();
         },
@@ -55,8 +55,8 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
   }
 
   function onEditClick() {
-    const promise = getTodoById(rowData.todo_id);
-    setTodoPromise(promise);
+    const promise = getUserById(rowData.user_id);
+    setUserPromise(promise);
     setShowEditSheet(true);
   }
 
@@ -91,10 +91,10 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <TodoEditSheet
+      <UserEditSheet
         open={showEditSheet}
         onOpenChange={setShowEditSheet}
-        todoPromise={todoPromise}
+        userPromise={userPromise}
       />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -102,7 +102,7 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              You&apos;re about to delete &quot;{rowData.title}&quot;. This
+              You&apos;re about to delete &quot;{rowData.email}&quot;. This
               action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

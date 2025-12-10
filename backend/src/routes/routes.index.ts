@@ -12,6 +12,6 @@ routes.use(genericRoutes);
 // module routes
 routes.use('/todos', todoRoutes);
 routes.use('/auth', authRoutes);
-routes.use('/user', userRoutes);
+routes.use('/users', userRoutes);
 
 export default routes;

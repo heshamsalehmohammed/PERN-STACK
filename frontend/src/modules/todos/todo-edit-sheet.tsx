@@ -308,7 +308,7 @@ function TodoEditForm({
           type="submit"
           form="edit-todo-form"
           disabled={pending}
-          className="flex-1"
+          className="flex-1 cursor-pointer"
         >
           {pending ? (
             <>

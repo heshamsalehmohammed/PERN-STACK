@@ -75,7 +75,6 @@ class AuthorizationMiddleware {
 
 const authorizationMiddleware = new AuthorizationMiddleware();
 
-// ❗ IMPORTANT: bind the method so Express sees it correctly typed
 export const authorization = authorizationMiddleware.authorize;
 
 export default AuthorizationMiddleware;

@@ -21,9 +21,9 @@ export default class TodoRoutes {
   private initializeRoutes(): void {
     this.router.get(
       "/",
-      authorization({
+/*       authorization({
         permissions: [UserPermissionEnum.CAN_VIEW_TODO],
-      }),
+      }), */
       this.todoController.getAllTodosController
     );
 

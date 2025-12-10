@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { AuthenticationGateClient } from "@/modules/auth/auth-gates-client";
 
 export default function Home() {
   return (
@@ -68,30 +69,32 @@ export default function Home() {
                 </Button>
               </Link>
             </div>
-            <div className="mt-12 flex flex-col items-center justify-center gap-4">
-              <h3 className="text-xl font-semibold text-foreground">
-                Access Your Workspace
-              </h3>
+            <AuthenticationGateClient requireAuth={false}>
+              <div className="mt-12 flex flex-col items-center justify-center gap-4">
+                <h3 className="text-xl font-semibold text-foreground">
+                  Access Your Workspace
+                </h3>
 
-              <Link href="/auth/login" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto px-8 py-6 text-lg font-semibold shadow hover:shadow-md transition-all duration-300"
-                >
-                  Login
-                </Button>
-              </Link>
-
-              <p className="text-sm text-muted-foreground">
-                Don’t have an account?{" "}
-                <Link
-                  href="/auth/register"
-                  className="text-primary font-medium hover:underline"
-                >
-                  Register here
+                <Link href="/auth/login" className="w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto px-8 py-6 text-lg font-semibold shadow hover:shadow-md transition-all duration-300"
+                  >
+                    Login
+                  </Button>
                 </Link>
-              </p>
-            </div>
+
+                <p className="text-sm text-muted-foreground">
+                  Don’t have an account?{" "}
+                  <Link
+                    href="/auth/register"
+                    className="text-primary font-medium hover:underline"
+                  >
+                    Register here
+                  </Link>
+                </p>
+              </div>
+            </AuthenticationGateClient>
           </div>
         </div>
       </section>
@@ -234,7 +237,6 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-
     </main>
   );
 }

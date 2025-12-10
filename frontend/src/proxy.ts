@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose"; // Use jose directly in middleware for Edge compatibility
-import { PermissionCombinationIdentifier } from "./modules/auth/permission-helpers";
+import { PermissionCombinationIdentifier, UserPermissions, UserRoles } from "./modules/auth/permission-helpers";
 
 const secretKey = process.env.ACCESS_JWT_SECRET;
 if (!secretKey) {
@@ -13,7 +13,6 @@ const JWT_SECRET_KEY = new TextEncoder().encode(
   secretKey || "default-secret-for-build"
 );
 
-// --- Authorization Rule Definitions ---
 interface IAccessRule {
   roles?: TUserRole[];
   permissions?: TUserPermission[];
@@ -22,10 +21,14 @@ interface IAccessRule {
 
 const publicPaths = ["/", "/documents", "/auth/login", "/auth/register"];
 
+
 const AUTHORIZATION_RULES: Record<string, IAccessRule> = {
-  "/todos": { roles: ["master", "admin", "user"] },
+  "/todos": {
+    roles: [UserRoles.MASTER],
+    permissions: [UserPermissions.CAN_VIEW_TODO],
+  },
   "/users": {
-    roles: ["master"],
+    roles: [UserRoles.MASTER],
   },
 };
 
@@ -38,6 +41,16 @@ async function verifyTokenInMiddleware(
     const { payload } = await jwtVerify(token, JWT_SECRET_KEY);
     return payload as unknown as ISignedPayload;
   } catch (e) {
+    const error = e as Error;
+
+    if (error.name === "JWTExpired") {
+      console.warn("Middleware Token check failed: JWT Expired.");
+    } else {
+      console.error(
+        "Middleware Token check failed: Invalid Signature/Claim.",
+        error.message
+      );
+    }
     return null;
   }
 }
