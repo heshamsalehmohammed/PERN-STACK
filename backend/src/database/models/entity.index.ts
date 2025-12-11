@@ -8,9 +8,10 @@
 // import Task from '../../modules/tasks/tasks.model';
 // import Worker from '../../modules/workers/workers.model';
 import { Todo } from '../../modules/todo';
+import { User } from "../../modules/user";
 
 // Export models here:
 // export  { FlowControl, FlowTaskMap, Job, Task, TaskWorkers, Worker, Parameters  };
 
 // eslint-disable-next-line import/prefer-default-export
-export { Todo };
+export { Todo,User };
