@@ -12,6 +12,8 @@ export function TodoTable({ data }: TodoTableProps) {
     <DataTable
       columns={todoColumns}
       data={data}
+      searchKey="title"
+      searchPlaceholder="Search over titles"
     />
   );
 }

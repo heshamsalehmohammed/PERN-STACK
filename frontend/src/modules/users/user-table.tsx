@@ -12,6 +12,8 @@ export function UserTable({ data }: UserTableProps) {
     <DataTable
       columns={userColumns}
       data={data}
+      searchKey="email"
+      searchPlaceholder="Search over emails"
     />
   );
 }

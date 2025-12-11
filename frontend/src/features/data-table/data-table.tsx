@@ -68,9 +68,9 @@ export function DataTable<TData, TValue>({
       <Input
         placeholder={searchPlaceholder}
         value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-        onChange={(event) =>
+        onChange={(event) =>{
           table.getColumn(searchKey)?.setFilterValue(event.target.value)
-        }
+        }}
         className="max-w-sm"
       />
       <div className="rounded-md border">
