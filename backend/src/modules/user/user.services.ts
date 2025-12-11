@@ -19,7 +19,7 @@ export default class UserService {
    */
   public async getAllUsers(is_admin?: boolean): Promise<IDataResponse<IUser[]>> {
     // validate status if provided with zod
-    if (is_admin) {
+    if (is_admin !== undefined) {
       const validation = createUserSchema.shape.is_admin.safeParse(is_admin);
       if (!validation.success) {
         return {

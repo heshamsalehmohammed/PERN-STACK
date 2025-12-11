@@ -17,7 +17,7 @@ export default class UserController {
     res: Response<IDataResponse<IUser[]>>,
   ): Promise<void> => {
     // get isAdmin from query params
-    const isAdmin = req.query.is_admin as boolean | undefined;
+    const isAdmin = req.query.is_admin === "true";
     const result = await this.userService.getAllUsers(isAdmin);
     res.status(result.success ? 200 : 400).json(result);
   };

@@ -36,6 +36,8 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  searchKey,
+  searchPlaceholder
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -63,18 +65,14 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter titles..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>{
-            table.getColumn("title")?.setFilterValue(event.target.value);
-/*             table.getColumn("description")?.setFilterValue(event.target.value);
- */          }
-          }
-          className="max-w-sm"
-        />
-      </div>
+      <Input
+        placeholder={searchPlaceholder}
+        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+        onChange={(event) =>
+          table.getColumn(searchKey)?.setFilterValue(event.target.value)
+        }
+        className="max-w-sm"
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

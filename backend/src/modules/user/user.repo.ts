@@ -12,7 +12,7 @@ export default class UserRepository {
     // if status pass it as where condition
     try {
       const users = await this.manager.find(User, {
-        where: is_admin ? { is_admin } : undefined,
+        where: { is_admin },
       });
       return {
         success: true,

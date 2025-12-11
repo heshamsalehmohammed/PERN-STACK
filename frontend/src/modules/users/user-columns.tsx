@@ -41,7 +41,7 @@ export const userColumns: ColumnDef<IUser>[] = [
       <DataTableColumnHeader column={column} title="Role" />
     ),
     cell: ({ row }) => {
-      const isAdmin = row.getValue("isAdmin") as boolean;
+      const isAdmin = row.getValue("is_admin") as boolean;
       return (
         <div className="max-w-[300px] truncate font-medium">
           {isAdmin ? "Admin" : "User"}

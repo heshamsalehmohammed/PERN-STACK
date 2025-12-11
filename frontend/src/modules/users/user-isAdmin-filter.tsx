@@ -11,13 +11,14 @@ export function UserIsAdminFilter() {
   const [pending, startTransition] = useTransition();
 
   const currentIsAdmin = searchParams.get("is_admin") || "";
+  console.log("currentIsAdmin", currentIsAdmin);
 
-  function handleStatusChange(e: any) {
+  function handleRoleChange(value: boolean) {
+    console.log("checked", value)
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
-      const value = e.target.value;
 
-      params.set("is_admin", value);
+      params.set("is_admin", value.toString());
 
       router.push(`?${params.toString()}`);
     });
@@ -25,8 +26,17 @@ export function UserIsAdminFilter() {
 
   return (
     <>
-      <Checkbox onChange={handleStatusChange}>filter admin </Checkbox>
-      <FullScreenLoader isLoading={pending} headerText="Loading todos..." />
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          onCheckedChange={handleRoleChange}
+          checked={currentIsAdmin === "true"}
+        />
+        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          Show Admin Users
+        </label>
+      </div>
+      `
+      <FullScreenLoader isLoading={pending} headerText="Loading users..." />
     </>
   );
 }

@@ -11,24 +11,30 @@ export default function MainLayout({
       <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="flex items-center gap-2 transition-opacity hover:opacity-80"
             >
               <span className="text-xl font-bold bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                 RetailZoom
               </span>
             </Link>
-            
+
             <nav className="flex items-center gap-6">
-              <Link 
-                href="/todos" 
+              <Link
+                href="/users"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Users
+              </Link>
+              <Link
+                href="/todos"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 Todos
               </Link>
-              <Link 
-                href="/documents" 
+              <Link
+                href="/documents"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 Documentation
@@ -39,9 +45,7 @@ export default function MainLayout({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

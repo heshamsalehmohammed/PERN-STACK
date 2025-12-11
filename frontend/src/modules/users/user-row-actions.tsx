@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Row } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
-import { deleteUser, getUserById } from './user.actions';
+import { deleteUser, getUserById } from "./user.actions";
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { UserEditSheet } from './user-edit-sheet';
+import { UserEditSheet } from "./user-edit-sheet";
 import FullScreenLoader from '@/features/dialogs/loading-dialog';
 
 interface UserRowActionsProps {

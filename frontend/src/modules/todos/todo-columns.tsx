@@ -18,7 +18,9 @@ export const todoColumns: ColumnDef<ITodo>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
     ),
-    cell: ({ row }) => <span className="font-medium">{row.getValue("todo_id")}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium">{row.getValue("todo_id")}</span>
+    ),
   },
   {
     accessorKey: "title",
@@ -30,6 +32,7 @@ export const todoColumns: ColumnDef<ITodo>[] = [
         {row.getValue("title")}
       </div>
     ),
+    filterFn: "includesString",
   },
   {
     accessorKey: "description",
@@ -41,6 +44,7 @@ export const todoColumns: ColumnDef<ITodo>[] = [
         {row.getValue("description") || "-"}
       </div>
     ),
+    filterFn: "includesString",
   },
   {
     accessorKey: "status",
@@ -49,15 +53,12 @@ export const todoColumns: ColumnDef<ITodo>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as TTodoStatus;
-      return (
-        <Badge variant={statusVariants[status]}>
-          {status}
-        </Badge>
-      );
+      return <Badge variant={statusVariants[status]}>{status}</Badge>;
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
+    enableColumnFilter: true,
   },
   {
     accessorKey: "priority",
@@ -67,7 +68,15 @@ export const todoColumns: ColumnDef<ITodo>[] = [
     cell: ({ row }) => {
       const priority = row.getValue("priority") as number;
       return (
-        <Badge variant={priority >= 3 ? "destructive" : priority >= 2 ? "secondary" : "outline"}>
+        <Badge
+          variant={
+            priority >= 3
+              ? "destructive"
+              : priority >= 2
+              ? "secondary"
+              : "outline"
+          }
+        >
           {priority}
         </Badge>
       );
