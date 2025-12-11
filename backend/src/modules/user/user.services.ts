@@ -1,11 +1,14 @@
-import type UserRepository from './user.repo';
+import type UserRepository from "./user.repo";
 import {
   createUserSchema,
   deleteUserSchema,
   getUserByIdSchema,
   updateUserSchema,
 } from "./user.validations";
-import ErrorHandling from '../../helpers/error-handling';
+import ErrorHandling from "../../helpers/error-handling";
+import * as bcrypt from "bcrypt";
+
+const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10);
 
 export default class UserService {
   private readonly userRepository: UserRepository;
@@ -17,7 +20,9 @@ export default class UserService {
   /**
    * Get all users
    */
-  public async getAllUsers(is_admin?: boolean): Promise<IDataResponse<IUser[]>> {
+  public async getAllUsers(
+    is_admin?: boolean
+  ): Promise<IDataResponse<IUser[]>> {
     // validate status if provided with zod
     if (is_admin !== undefined) {
       const validation = createUserSchema.shape.is_admin.safeParse(is_admin);
@@ -49,7 +54,9 @@ export default class UserService {
   /**
    * Create a new user
    */
-  public async createUser(userData: IUserInsertDTO): Promise<IDataResponse<IUser>> {
+  public async createUser(
+    userData: IUserInsertDTO
+  ): Promise<IDataResponse<IUser>> {
     const validation = createUserSchema.safeParse(userData);
     if (!validation.success) {
       return {
@@ -58,19 +65,17 @@ export default class UserService {
       };
     }
 
+    const password_hash = await bcrypt.hash(
+      validation.data.password,
+      SALT_ROUNDS
+    );
+
     const validatedData: IUserInsertDTO = {
       email: validation.data.email,
       user_name: validation.data.user_name,
       is_admin: validation.data.is_admin,
-      password: validation.data.password,
+      password: password_hash,
     };
-
-
-    /* 
-    
-    hashing the password // i dont remember the syntax
-    
-    */
 
     return this.userRepository.createUserRepo(validatedData);
   }
@@ -80,7 +85,7 @@ export default class UserService {
    */
   public async updateUserById(
     userId: number,
-    updateData: IUserUpdateDTO,
+    updateData: IUserUpdateDTO
   ): Promise<IDataResponse<IUser>> {
     const idValidation = getUserByIdSchema.safeParse({ user_id: userId });
     if (!idValidation.success) {
@@ -98,14 +103,19 @@ export default class UserService {
       };
     }
 
-    const validatedData: IUserUpdateDTO = {
-      email: validation.data.email,
-      user_name: validation.data.user_name,
-      is_admin: validation.data.is_admin,
-      password: validation.data.password,
-    };
+    const { email, password, user_name,is_admin } = validation.data;
 
-    return this.userRepository.updateUserByIdRepo(userId, validatedData);
+    const partial: Partial<IUser> = {};
+
+    if (email !== undefined) partial.email = email;
+    if (user_name !== undefined) partial.user_name = user_name;
+    if (is_admin !== undefined) partial.is_admin = is_admin;
+
+    if (password) {
+      const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
+      partial.password = password_hash;
+    }
+    return this.userRepository.updateUserByIdRepo(userId, partial);
   }
 
   /**
