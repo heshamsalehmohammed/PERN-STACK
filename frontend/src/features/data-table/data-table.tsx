@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -35,6 +36,8 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  searchKey = "name",
+  searchPlaceholder = "Search...",
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -60,8 +63,18 @@ export function DataTable<TData, TValue>({
     },
   });
 
+
+
   return (
     <div className="space-y-4">
+      <Input
+        placeholder={searchPlaceholder}
+        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+        onChange={(event) =>
+          table.getColumn(searchKey)?.setFilterValue(event.target.value)
+        }
+        className="max-w-sm"
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

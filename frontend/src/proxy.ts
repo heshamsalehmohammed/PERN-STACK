@@ -144,7 +144,9 @@ export async function proxy(request: NextRequest) {
       if (authorized) {
         return NextResponse.next(); 
       } else {
-        return NextResponse.redirect(new URL("/403", request.nextUrl));
+        return NextResponse.redirect(
+          new URL("/unauthorized/403", request.nextUrl)
+        );
       }
     }
   }

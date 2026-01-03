@@ -23,7 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { createTodo } from "./todo.actions";
 import { TODO_STATUSES, PRIORITY_OPTIONS } from "./todo.const";
 import { toast } from "sonner";
@@ -75,15 +80,14 @@ export function TodoCreateSheet() {
       };
 
       startTransition(async () => {
-
-         await handleAction(() => createTodo(todoData), {
-           successMessage: "Todo created successfully",
-           onSuccess: () => {
-             form.reset();
-             // setOpen(false);
-             router.refresh();
-           },
-         });
+        await handleAction(() => createTodo(todoData), {
+          successMessage: "Todo created successfully",
+          onSuccess: () => {
+            form.reset();
+            // setOpen(false);
+            router.refresh();
+          },
+        });
         const result = await createTodo(todoData);
       });
     },
@@ -91,17 +95,17 @@ export function TodoCreateSheet() {
 
   return (
     <Sheet open={open} onOpenChange={(value) => !pending && setOpen(value)}>
-      <SheetTrigger asChild>
-        <AuthorizationGateClient
-          roles={[UserRoles.MASTER]}
-          permissions={[UserPermissions.CAN_ADD_TODO]}
-        >
+      <AuthorizationGateClient
+        roles={[UserRoles.MASTER]}
+        permissions={[UserPermissions.CAN_ADD_TODO]}
+      >
+        <SheetTrigger asChild>
           <Button size="sm" className="cursor-pointer">
             <Plus className="size-4" />
             New Todo
           </Button>
-        </AuthorizationGateClient>
-      </SheetTrigger>
+        </SheetTrigger>
+      </AuthorizationGateClient>
       <SheetContent className="sm:max-w-md">
         <SheetHeader className="text-left">
           <SheetTitle className="text-xl">Create New Todo</SheetTitle>

@@ -70,76 +70,82 @@ export function TodoRowActions({ row }: TodoRowActionsProps) {
   }
 
   return (
-    <>
-      <FullScreenLoader isLoading={isPending} headerText="Deleting todo..." />
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <EllipsisIcon className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuGroup>
-            <AuthorizationGateClient
-              roles={[UserRoles.MASTER]}
-              permissions={[UserPermissions.CAN_EDIT_TODO]}
-            >
-              <DropdownMenuItem onSelect={onEditClick}>
-                <PencilIcon className="mr-2 h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-            </AuthorizationGateClient>
-          </DropdownMenuGroup>
-
-          <DropdownMenuGroup>
-            <AuthorizationGateClient
-              roles={[UserRoles.MASTER]}
-              permissions={[UserPermissions.CAN_DELETE_TODO]}
-            >
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onSelect={() => setShowDeleteDialog(true)}
-                >
-                  <TrashIcon className="mr-2 h-4 w-4" />
-                  Delete
+    <AuthorizationGateClient
+      roles={[UserRoles.MASTER]}
+      permissions={[
+        UserPermissions.CAN_DELETE_TODO,
+        UserPermissions.CAN_EDIT_TODO,
+      ]}
+      permissionsAllowIf={PermissionCombinationIdentifier.HAS_ANY}
+    >
+      <>
+        <FullScreenLoader isLoading={isPending} headerText="Deleting todo..." />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <EllipsisIcon className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuGroup>
+              <AuthorizationGateClient
+                roles={[UserRoles.MASTER]}
+                permissions={[UserPermissions.CAN_EDIT_TODO]}
+              >
+                <DropdownMenuItem onSelect={onEditClick}>
+                  <PencilIcon className="mr-2 h-4 w-4" />
+                  Edit
                 </DropdownMenuItem>
-              </>
-            </AuthorizationGateClient>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              </AuthorizationGateClient>
+            </DropdownMenuGroup>
 
-      <TodoEditSheet
-        open={showEditSheet}
-        onOpenChange={setShowEditSheet}
-        todoPromise={todoPromise}
-      />
-
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You&apos;re about to delete &quot;{rowData.title}&quot;. This
-              action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={onDelete}
-              disabled={isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isPending ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+            <DropdownMenuGroup>
+              <AuthorizationGateClient
+                roles={[UserRoles.MASTER]}
+                permissions={[UserPermissions.CAN_DELETE_TODO]}
+              >
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onSelect={() => setShowDeleteDialog(true)}
+                  >
+                    <TrashIcon className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </>
+              </AuthorizationGateClient>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <TodoEditSheet
+          open={showEditSheet}
+          onOpenChange={setShowEditSheet}
+          todoPromise={todoPromise}
+        />
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                You&apos;re about to delete &quot;{rowData.title}&quot;. This
+                action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={onDelete}
+                disabled={isPending}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isPending ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
+    </AuthorizationGateClient>
   );
 }

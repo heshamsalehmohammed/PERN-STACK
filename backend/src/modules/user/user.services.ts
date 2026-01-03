@@ -26,16 +26,10 @@ export default class UserService {
     this.jwtMethods = jwtMethods;
   }
 
-  /**
-   * Get all users
-   */
   public async getAllUsers(): Promise<IDataResponse<IUser[]>> {
     return this.userRepository.getAllUsersRepo();
   }
 
-  /**
-   * Get user by ID
-   */
   public async getUserById(userId: number): Promise<IDataResponse<IUser>> {
     const validation = userIdSchema.safeParse({ user_id: userId });
     if (!validation.success) {
@@ -48,10 +42,6 @@ export default class UserService {
     return this.userRepository.getUserByIdRepo(userId);
   }
 
-  /**
-   * Create/register a new user
-   * (You can restrict this to master/admin via controller/route/middleware)
-   */
   public async createUser(
     userData: IUserInsertDTO
   ): Promise<IDataResponse<IUser>> {
@@ -74,15 +64,12 @@ export default class UserService {
       role,
       permissions: permissions ?? [],
       is_active: is_active ?? true,
-      // Base fields (created_at, updated_at) handled by Base model
     } as Omit<IUser, "user_id">;
 
     return this.userRepository.createUserRepo(toSave);
   }
 
-  /**
-   * Update a user by ID
-   */
+
   public async updateUserById(
     userId: number,
     updateData: IUserUpdateDTO
@@ -120,9 +107,6 @@ export default class UserService {
     return this.userRepository.updateUserByIdRepo(userId, partial);
   }
 
-  /**
-   * Delete user by ID
-   */
   public async deleteUserById(userId: number): Promise<IBasicResponse> {
     const validation = userIdSchema.safeParse({ user_id: userId });
     if (!validation.success) {
@@ -135,9 +119,6 @@ export default class UserService {
     return this.userRepository.deleteUserByIdRepo(userId);
   }
 
-  /**
-   * Login user: validate credentials and return JWT + user
-   */
   public async loginUser(
     email: string,
     password: string
@@ -183,9 +164,7 @@ export default class UserService {
     };
   }
 
-  /**
-   * Public registration (self-signup) and login
-   */
+
   public async registerUser(
     email: string,
     password: string
@@ -199,7 +178,6 @@ export default class UserService {
       };
     }
 
-    // Check if email already exists
     const existing = await this.userRepository.getUserByEmailRepo(email);
 
     if (existing.success && existing.data) {
@@ -209,7 +187,6 @@ export default class UserService {
       };
     }
 
-    // Use createUser with forced defaults
     const createResult = await this.createUser({
       email,
       password,
